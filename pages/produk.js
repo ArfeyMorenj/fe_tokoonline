@@ -2,136 +2,156 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 
-const Produk = () => {
-  const [products, setProducts] = useState([]);
+export default function HomePage() {
+  const [produk, setProduk] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
 
-      if (!token) {
-        router.push('/');
-        return;
-      }
+    if (!token) {
+      router.push('/');
+      return;
+    }
 
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/produk', {
+    axios
+      .get('http://127.0.0.1:8000/api/produk', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setProduk(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Gagal mengambil produk:', err);
+        setError('Gagal memuat produk. Silakan coba lagi atau login ulang.');
+        setLoading(false);
+      });
+  }, [router]);
+
+  const addToCart = async (produkId) => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.post(
+        'http://127.0.0.1:8000/api/keranjang',
+        { produk_id: produkId, jumlah: 1 },
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
-        setProducts(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Gagal mengambil data produk:', error);
-        router.push('/');
-      }
-    };
-
-    fetchProducts();
-  }, [router]);
+        }
+      );
+      alert('Produk berhasil ditambahkan ke keranjang!');
+    } catch (err) {
+      console.error('Gagal menambah ke keranjang:', err);
+      alert('Gagal menambah ke keranjang. Pastikan stok tersedia.');
+    }
+  };
 
   if (loading) {
-    return <div style={{ textAlign: 'center', marginTop: '50px' }}>Memuat produk...</div>;
+    return <div className="text-center mt-12 text-gray-600">Memuat produk...</div>;
   }
 
-  return (
-    <>
-      <header style={styles.header}>
-        <div style={styles.heroContainer}>
-          <h1>Discover Your Style</h1>
-          <p>Trendy products curated just for you. Shop the latest </p>
-        </div>
-      </header>
+  if (error) {
+    return <div className="text-center mt-12 text-red-500">{error}</div>;
+  }
 
-      <main style={styles.main}>
-        <section style={styles.productGrid}>
-          {products.map((product) => (
-            <div key={product.id} style={styles.productCard}>
+  const featuredProduct = produk.length > 0 ? produk[0] : null;
+
+  return (
+    <div className="min-h-screen">
+      {/* Navbar */}
+      <div className="nav">
+        <div className="logo">Kick Avenue</div>
+        <div className="nav-links">
+          <button onClick={() => router.push('/produk')}>Produk</button>
+          <button onClick={() => router.push('/keranjang')}>Keranjang</button>
+          <button onClick={() => router.push('/checkout')}>Checkout</button>
+        </div>
+        <button
+          onClick={() => {
+            localStorage.removeItem('token');
+            router.push('/');
+          }}
+          className="logout-btn"
+        >
+          Logout
+        </button>
+      </div>
+
+      {/* Banner Produk Unggulan */}
+      {featuredProduct && (
+        <div className="featured-banner">
+          <h1>{featuredProduct.nama}</h1>
+          <div className="image-container">
+            <img
+              src={
+                featuredProduct.gambar
+                  ? `http://127.0.0.1:8000/storage/produk/${featuredProduct.gambar}`
+                  : 'https://via.placeholder.com/300x200'
+              }
+              alt={featuredProduct.nama}
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/300x200';
+              }}
+            />
+            <img
+              src={
+                featuredProduct.gambar
+                  ? `http://127.0.0.1:8000/storage/produk/${featuredProduct.gambar}`
+                  : 'https://via.placeholder.com/300x200'
+              }
+              alt={featuredProduct.nama}
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/300x200';
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Bagian Produk Trending */}
+      <div className="container mx-auto p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-gray-700">Trending</h2>
+          <button
+            onClick={() => router.push('/produk')}
+            className="text-blue-600 hover:underline"
+          >
+            View All
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {produk.map((item) => (
+            <div key={item.id} className="product-card">
               <img
-                src={`http://localhost:8000/storage/produk/${product.gambar}`}
-                alt={product.nama}
-                style={styles.productImage}
+                src={
+                  item.gambar
+                    ? `http://127.0.0.1:8000/storage/produk/${item.gambar}`
+                    : 'https://via.placeholder.com/200x150'
+                }
+                alt={item.nama}
+                className="w-full h-48 object-cover rounded"
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/200x150';
+                }}
               />
-              <div style={styles.productInfo}>
-                <h3 style={styles.productName}>{product.nama}</h3>
-                <p style={styles.productPrice}>Rp {Number(product.harga).toLocaleString()}</p>
-                <button style={styles.button}>Add to Cart</button>
+              <div className="mt-2">
+                <h3>{item.nama}</h3>
+                <p className="price">Rp {Number(item.harga).toLocaleString()}</p>
+                <p className="stock">Stok: {item.stok}</p>
+                <button onClick={() => addToCart(item.id)} className="add-to-cart-btn">
+                  Add to Cart
+                </button>
               </div>
             </div>
           ))}
-        </section>
-      </main>
-    </>
+        </div>
+      </div>
+    </div>
   );
-};
-
-const styles = {
-  header: {
-    backgroundColor: '#444',
-    color: '#fff',
-    padding: '4rem 1.5rem',
-    textAlign: 'center',
-  },
-  heroContainer: {
-    maxWidth: '700px',
-    margin: '0 auto',
-  },
-  main: {
-    padding: '3rem 1.5rem',
-    maxWidth: '1200px',
-    margin: '0 auto',
-  },
-  productGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-    gap: '2rem',
-  },
-  productCard: {
-    background: '#fff',
-    borderRadius: '12px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-    overflow: 'hidden',
-    display: 'flex',
-    flexDirection: 'column',
-    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-  },
-  productImage: {
-    width: '100%',
-    height: '180px',
-    objectFit: 'cover',
-  },
-  productInfo: {
-    padding: '1rem 1.2rem',
-    flexGrow: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
-  productName: {
-    margin: '0 0 0.5rem 0',
-    fontSize: '1.1rem',
-    fontWeight: '700',
-    color: '#333',
-  },
-  productPrice: {
-    fontWeight: '700',
-    color: '#333',
-    marginBottom: '1rem',
-    fontSize: '1rem',
-  },
-  button: {
-    backgroundColor: '#444',
-    border: 'none',
-    padding: '0.5rem',
-    fontWeight: '600',
-    color: '#fff',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s ease',
-  },
-};
-
-export default Produk;
+}

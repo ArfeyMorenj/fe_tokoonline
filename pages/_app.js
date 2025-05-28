@@ -1,6 +1,6 @@
-// 3. pages/_app.js
-import '@/styles/globals.css';
+import '../styles/global.css'; // Tailwind CSS dan gaya global
+import '../styles/styles.css'; // Gaya kustom global
 
-export default function App({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps }) {
   return <Component {...pageProps} />;
 }

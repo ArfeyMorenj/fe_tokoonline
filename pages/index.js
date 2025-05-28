@@ -1,36 +1,24 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import axios from 'axios';
 
 const styles = {
   container: {
     width: '400px',
     margin: '50px auto',
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    fontFamily: 'Segoe UI, sans-serif',
     boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
     borderRadius: '10px',
     overflow: 'hidden',
     background: '#fff',
   },
   header: {
-    display: 'flex',
-    justifyContent: 'space-around',
+    padding: '20px',
     background: '#4f46e5',
     color: '#fff',
+    textAlign: 'center',
+    fontSize: '20px',
     fontWeight: '600',
-    fontSize: '18px',
-    cursor: 'pointer',
-    userSelect: 'none',
-  },
-  activeTab: {
-    flex: 1,
-    padding: '15px',
-    borderBottom: '4px solid #ff7f50',
-  },
-  inactiveTab: {
-    flex: 1,
-    padding: '15px',
-    borderBottom: '4px solid transparent',
-    opacity: 0.7,
   },
   form: {
     padding: '30px',
@@ -44,16 +32,11 @@ const styles = {
     color: '#333',
   },
   input: {
-    padding: '10px 12px',
+    padding: '10px',
     marginBottom: '20px',
     borderRadius: '6px',
-    border: '1.5px solid #ddd',
+    border: '1px solid #ccc',
     fontSize: '16px',
-    outline: 'none',
-    transition: 'border-color 0.3s',
-  },
-  inputFocus: {
-    borderColor: '#4f46e5',
   },
   button: {
     padding: '12px',
@@ -64,215 +47,162 @@ const styles = {
     fontSize: '16px',
     fontWeight: '600',
     cursor: 'pointer',
-    transition: 'background 0.3s',
   },
-  errorText: {
-    color: '#e63946',
-    fontSize: '13px',
-    marginTop: '-15px',
+  error: {
+    color: 'red',
+    fontSize: '14px',
     marginBottom: '15px',
+  },
+  toggle: {
+    textAlign: 'center',
+    marginTop: '10px',
+    color: '#4f46e5',
+    cursor: 'pointer',
+    fontSize: '14px',
+    textDecoration: 'underline',
   },
 };
 
-function LoginForm({ onSubmit }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [focusedInput, setFocusedInput] = useState(null);
-  const [error, setError] = useState(null);
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    setError(null);
-    if (!email) {
-      setError('Email is required');
-      return;
-    }
-    if (!password) {
-      setError('Password is required');
-      return;
-    }
-    onSubmit({ email, password });
-  };
-
-  return (
-    <form style={styles.form} onSubmit={handleSubmit} noValidate>
-      {error && <div style={styles.errorText}>{error}</div>}
-      <label htmlFor="loginEmail" style={styles.label}>Email</label>
-      <input
-        id="loginEmail"
-        type="email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        style={{
-          ...styles.input,
-          ...(focusedInput === 'loginEmail' ? styles.inputFocus : {}),
-        }}
-        onFocus={() => setFocusedInput('loginEmail')}
-        onBlur={() => setFocusedInput(null)}
-        placeholder="Enter your email"
-      />
-      <label htmlFor="loginPassword" style={styles.label}>Password</label>
-      <input
-        id="loginPassword"
-        type="password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        style={{
-          ...styles.input,
-          ...(focusedInput === 'loginPassword' ? styles.inputFocus : {}),
-        }}
-        onFocus={() => setFocusedInput('loginPassword')}
-        onBlur={() => setFocusedInput(null)}
-        placeholder="Enter your password"
-      />
-      <button
-        type="submit"
-        style={styles.button}
-        onMouseOver={e => (e.currentTarget.style.background = '#4338ca')}
-        onMouseOut={e => (e.currentTarget.style.background = '#4f46e5')}
-      >
-        Login
-      </button>
-    </form>
-  );
-}
-
-function RegisterForm({ onSubmit }) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [focusedInput, setFocusedInput] = useState(null);
-  const [error, setError] = useState(null);
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    setError(null);
-    if (!name) {
-      setError('Name is required');
-      return;
-    }
-    if (!email) {
-      setError('Email is required');
-      return;
-    }
-    if (!password) {
-      setError('Password is required');
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-    onSubmit({ name, email, password });
-  };
-
-  return (
-    <form style={styles.form} onSubmit={handleSubmit} noValidate>
-      {error && <div style={styles.errorText}>{error}</div>}
-      <label htmlFor="registerName" style={styles.label}>Name</label>
-      <input
-        id="registerName"
-        type="text"
-        value={name}
-        onChange={e => setName(e.target.value)}
-        style={{
-          ...styles.input,
-          ...(focusedInput === 'registerName' ? styles.inputFocus : {}),
-        }}
-        onFocus={() => setFocusedInput('registerName')}
-        onBlur={() => setFocusedInput(null)}
-        placeholder="Enter your full name"
-      />
-      <label htmlFor="registerEmail" style={styles.label}>Email</label>
-      <input
-        id="registerEmail"
-        type="email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        style={{
-          ...styles.input,
-          ...(focusedInput === 'registerEmail' ? styles.inputFocus : {}),
-        }}
-        onFocus={() => setFocusedInput('registerEmail')}
-        onBlur={() => setFocusedInput(null)}
-        placeholder="Enter your email"
-      />
-      <label htmlFor="registerPassword" style={styles.label}>Password</label>
-      <input
-        id="registerPassword"
-        type="password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        style={{
-          ...styles.input,
-          ...(focusedInput === 'registerPassword' ? styles.inputFocus : {}),
-        }}
-        onFocus={() => setFocusedInput('registerPassword')}
-        onBlur={() => setFocusedInput(null)}
-        placeholder="Enter your password"
-      />
-      <label htmlFor="registerConfirmPassword" style={styles.label}>Confirm Password</label>
-      <input
-        id="registerConfirmPassword"
-        type="password"
-        value={confirmPassword}
-        onChange={e => setConfirmPassword(e.target.value)}
-        style={{
-          ...styles.input,
-          ...(focusedInput === 'registerConfirmPassword' ? styles.inputFocus : {}),
-        }}
-        onFocus={() => setFocusedInput('registerConfirmPassword')}
-        onBlur={() => setFocusedInput(null)}
-        placeholder="Confirm your password"
-      />
-      <button
-        type="submit"
-        style={styles.button}
-        onMouseOver={e => (e.currentTarget.style.background = '#4338ca')}
-        onMouseOut={e => (e.currentTarget.style.background = '#4f46e5')}
-      >
-        Register
-      </button>
-    </form>
-  );
-}
-
-export default function App() {
-  const [activeForm, setActiveForm] = useState('login');
+export default function AuthPage() {
+  const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    nama: '',
+    email: '',
+    kata_sandi: '',
+    telepon: '',
+    alamat: '',
+  });
+  const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleLoginSubmit = data => {
-    // Simulasi login berhasil
-    localStorage.setItem('token', 'contoh-token');
-    router.push('/produk');
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleRegisterSubmit = data => {
-    alert(`Registered user ${data.name} with email ${data.email}`);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (!formData.email || !formData.kata_sandi) {
+      setError('Email dan kata sandi wajib diisi.');
+      return;
+    }
+
+    try {
+      const res = await axios.post('http://127.0.0.1:8000/api/auth/login', {
+        email: formData.email,
+        kata_sandi: formData.kata_sandi,
+      });
+
+      localStorage.setItem('token', res.data.token);
+      router.push('/produk');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Login gagal. Periksa email dan kata sandi.');
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (!formData.nama || !formData.email || !formData.kata_sandi) {
+      setError('Nama, email, dan kata sandi wajib diisi.');
+      return;
+    }
+
+    try {
+      const res = await axios.post('http://127.0.0.1:8000/api/auth/register', {
+        nama: formData.nama,
+        email: formData.email,
+        kata_sandi: formData.kata_sandi,
+        telepon: formData.telepon,
+        alamat: formData.alamat,
+      });
+
+      localStorage.setItem('token', res.data.token);
+      router.push('/produk');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Pendaftaran gagal. Periksa data yang dimasukkan.');
+    }
+  };
+
+  const toggleForm = () => {
+    setIsLogin(!isLogin);
+    setError('');
+    setFormData({
+      nama: '',
+      email: '',
+      kata_sandi: '',
+      telepon: '',
+      alamat: '',
+    });
   };
 
   return (
     <div style={styles.container}>
-      <div style={styles.header}>
-        <div
-          style={activeForm === 'login' ? styles.activeTab : styles.inactiveTab}
-          onClick={() => setActiveForm('login')}
-        >
-          Login
+      <div style={styles.header}>{isLogin ? 'Login' : 'Register'}</div>
+      <form onSubmit={isLogin ? handleLogin : handleRegister} style={styles.form}>
+        {error && <div style={styles.error}>{error}</div>}
+        {!isLogin && (
+          <>
+            <label style={styles.label}>Nama</label>
+            <input
+              type="text"
+              name="nama"
+              value={formData.nama}
+              onChange={handleInputChange}
+              style={styles.input}
+              placeholder="Masukkan nama"
+            />
+          </>
+        )}
+        <label style={styles.label}>Email</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          style={styles.input}
+          placeholder="contoh@email.com"
+        />
+        <label style={styles.label}>Kata Sandi</label>
+        <input
+          type="password"
+          name="kata_sandi"
+          value={formData.kata_sandi}
+          onChange={handleInputChange}
+          style={styles.input}
+          placeholder="••••••••"
+        />
+        {!isLogin && (
+          <>
+            <label style={styles.label}>Telepon</label>
+            <input
+              type="text"
+              name="telepon"
+              value={formData.telepon}
+              onChange={handleInputChange}
+              style={styles.input}
+              placeholder="Masukkan nomor telepon"
+            />
+            <label style={styles.label}>Alamat</label>
+            <input
+              type="text"
+              name="alamat"
+              value={formData.alamat}
+              onChange={handleInputChange}
+              style={styles.input}
+              placeholder="Masukkan alamat"
+            />
+          </>
+        )}
+        <button type="submit" style={styles.button}>
+          {isLogin ? 'Login' : 'Register'}
+        </button>
+        <div style={styles.toggle} onClick={toggleForm}>
+          {isLogin ? 'Belum punya akun? Register' : 'Sudah punya akun? Login'}
         </div>
-        <div
-          style={activeForm === 'register' ? styles.activeTab : styles.inactiveTab}
-          onClick={() => setActiveForm('register')}
-        >
-          Register
-        </div>
-      </div>
-      {activeForm === 'login' ? (
-        <LoginForm onSubmit={handleLoginSubmit} />
-      ) : (
-        <RegisterForm onSubmit={handleRegisterSubmit} />
-      )}
+      </form>
     </div>
   );
 }

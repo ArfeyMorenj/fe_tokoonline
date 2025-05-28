@@ -1,0 +1,131 @@
+/* styles/components.css */
+
+/* Navbar */
+.nav {
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.nav-links {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-links button {
+  color: #2563eb;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.nav-links button:hover {
+  text-decoration: underline;
+}
+
+.logout-btn {
+  background-color: #2563eb;
+  color: #ffffff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* Featured Banner */
+.featured-banner {
+  background-color: #ffffff;
+  padding: 32px;
+  text-align: center;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.featured-banner h1 {
+  font-size: 36px;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.image-container img {
+  width: 256px;
+  height: 256px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Product Card */
+.product-card {
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.product-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.product-card img {
+  width: 100%;
+  height: 192px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.product-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-top: 8px;
+}
+
+.product-card .price {
+  color: #4b5563;
+  margin-top: 4px;
+}
+
+.product-card .stock {
+  color: #6b7280;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.product-card .add-to-cart-btn {
+  width: 100%;
+  margin-top: 8px;
+  background-color: #4f46e5;
+  color: #ffffff;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.product-card .add-to-cart-btn:hover {
+  background-color: #4338ca;
+}
