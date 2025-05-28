@@ -1,115 +1,278 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const styles = {
+  container: {
+    width: '400px',
+    margin: '50px auto',
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+    borderRadius: '10px',
+    overflow: 'hidden',
+    background: '#fff',
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    background: '#4f46e5',
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: '18px',
+    cursor: 'pointer',
+    userSelect: 'none',
+  },
+  activeTab: {
+    flex: 1,
+    padding: '15px',
+    borderBottom: '4px solid #ff7f50',
+  },
+  inactiveTab: {
+    flex: 1,
+    padding: '15px',
+    borderBottom: '4px solid transparent',
+    opacity: 0.7,
+  },
+  form: {
+    padding: '30px',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  label: {
+    marginBottom: '5px',
+    fontWeight: '600',
+    fontSize: '14px',
+    color: '#333',
+  },
+  input: {
+    padding: '10px 12px',
+    marginBottom: '20px',
+    borderRadius: '6px',
+    border: '1.5px solid #ddd',
+    fontSize: '16px',
+    outline: 'none',
+    transition: 'border-color 0.3s',
+  },
+  inputFocus: {
+    borderColor: '#4f46e5',
+  },
+  button: {
+    padding: '12px',
+    background: '#4f46e5',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    fontSize: '16px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'background 0.3s',
+  },
+  errorText: {
+    color: '#e63946',
+    fontSize: '13px',
+    marginTop: '-15px',
+    marginBottom: '15px',
+  },
+};
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+function LoginForm({ onSubmit }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [focusedInput, setFocusedInput] = useState(null);
+  const [error, setError] = useState(null);
 
-export default function Home() {
+  const handleSubmit = e => {
+    e.preventDefault();
+    setError(null);
+    if (!email) {
+      setError('Email is required');
+      return;
+    }
+    if (!password) {
+      setError('Password is required');
+      return;
+    }
+    onSubmit({ email, password });
+  };
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              pages/index.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <form style={styles.form} onSubmit={handleSubmit} noValidate>
+      {error && <div style={styles.errorText}>{error}</div>}
+      <label htmlFor="loginEmail" style={styles.label}>Email</label>
+      <input
+        id="loginEmail"
+        type="email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        style={{
+          ...styles.input,
+          ...(focusedInput === 'loginEmail' ? styles.inputFocus : {}),
+        }}
+        onFocus={() => setFocusedInput('loginEmail')}
+        onBlur={() => setFocusedInput(null)}
+        placeholder="Enter your email"
+      />
+      <label htmlFor="loginPassword" style={styles.label}>Password</label>
+      <input
+        id="loginPassword"
+        type="password"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+        style={{
+          ...styles.input,
+          ...(focusedInput === 'loginPassword' ? styles.inputFocus : {}),
+        }}
+        onFocus={() => setFocusedInput('loginPassword')}
+        onBlur={() => setFocusedInput(null)}
+        placeholder="Enter your password"
+      />
+      <button
+        type="submit"
+        style={styles.button}
+        onMouseOver={e => (e.currentTarget.style.background = '#4338ca')}
+        onMouseOut={e => (e.currentTarget.style.background = '#4f46e5')}
+      >
+        Login
+      </button>
+    </form>
+  );
+}
+
+function RegisterForm({ onSubmit }) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [focusedInput, setFocusedInput] = useState(null);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    setError(null);
+    if (!name) {
+      setError('Name is required');
+      return;
+    }
+    if (!email) {
+      setError('Email is required');
+      return;
+    }
+    if (!password) {
+      setError('Password is required');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    onSubmit({ name, email, password });
+  };
+
+  return (
+    <form style={styles.form} onSubmit={handleSubmit} noValidate>
+      {error && <div style={styles.errorText}>{error}</div>}
+      <label htmlFor="registerName" style={styles.label}>Name</label>
+      <input
+        id="registerName"
+        type="text"
+        value={name}
+        onChange={e => setName(e.target.value)}
+        style={{
+          ...styles.input,
+          ...(focusedInput === 'registerName' ? styles.inputFocus : {}),
+        }}
+        onFocus={() => setFocusedInput('registerName')}
+        onBlur={() => setFocusedInput(null)}
+        placeholder="Enter your full name"
+      />
+      <label htmlFor="registerEmail" style={styles.label}>Email</label>
+      <input
+        id="registerEmail"
+        type="email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        style={{
+          ...styles.input,
+          ...(focusedInput === 'registerEmail' ? styles.inputFocus : {}),
+        }}
+        onFocus={() => setFocusedInput('registerEmail')}
+        onBlur={() => setFocusedInput(null)}
+        placeholder="Enter your email"
+      />
+      <label htmlFor="registerPassword" style={styles.label}>Password</label>
+      <input
+        id="registerPassword"
+        type="password"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+        style={{
+          ...styles.input,
+          ...(focusedInput === 'registerPassword' ? styles.inputFocus : {}),
+        }}
+        onFocus={() => setFocusedInput('registerPassword')}
+        onBlur={() => setFocusedInput(null)}
+        placeholder="Enter your password"
+      />
+      <label htmlFor="registerConfirmPassword" style={styles.label}>Confirm Password</label>
+      <input
+        id="registerConfirmPassword"
+        type="password"
+        value={confirmPassword}
+        onChange={e => setConfirmPassword(e.target.value)}
+        style={{
+          ...styles.input,
+          ...(focusedInput === 'registerConfirmPassword' ? styles.inputFocus : {}),
+        }}
+        onFocus={() => setFocusedInput('registerConfirmPassword')}
+        onBlur={() => setFocusedInput(null)}
+        placeholder="Confirm your password"
+      />
+      <button
+        type="submit"
+        style={styles.button}
+        onMouseOver={e => (e.currentTarget.style.background = '#4338ca')}
+        onMouseOut={e => (e.currentTarget.style.background = '#4f46e5')}
+      >
+        Register
+      </button>
+    </form>
+  );
+}
+
+export default function App() {
+  const [activeForm, setActiveForm] = useState('login');
+  const router = useRouter();
+
+  const handleLoginSubmit = data => {
+    // Simulasi login berhasil
+    localStorage.setItem('token', 'contoh-token');
+    router.push('/produk');
+  };
+
+  const handleRegisterSubmit = data => {
+    alert(`Registered user ${data.name} with email ${data.email}`);
+  };
+
+  return (
+    <div style={styles.container}>
+      <div style={styles.header}>
+        <div
+          style={activeForm === 'login' ? styles.activeTab : styles.inactiveTab}
+          onClick={() => setActiveForm('login')}
+        >
+          Login
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        <div
+          style={activeForm === 'register' ? styles.activeTab : styles.inactiveTab}
+          onClick={() => setActiveForm('register')}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          Register
+        </div>
+      </div>
+      {activeForm === 'login' ? (
+        <LoginForm onSubmit={handleLoginSubmit} />
+      ) : (
+        <RegisterForm onSubmit={handleRegisterSubmit} />
+      )}
     </div>
   );
 }
