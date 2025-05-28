@@ -18,7 +18,7 @@ export default function Checkout() {
   return (
     <div>
       <h1>Checkout</h1>
-      <button onClick={handleCheckout}>Konfirmasi Checkout</button>
+      <button onClick={handleCheckout}>Konfirmasi Checkoutpppp</button>
     </div>
   );
 }
