@@ -68,7 +68,7 @@ export default function HomePage() {
       <div className="nav">
         <div className="logo">Kick Avenue</div>
         <div className="nav-links">
-          <button onClick={() => router.push('/produk')}>Produk</button>
+          <button onClick={() => router.push('/produk')}>Produkkk</button>
           <button onClick={() => router.push('/keranjang')}>Keranjang</button>
           <button onClick={() => router.push('/checkout')}>Checkout</button>
         </div>
