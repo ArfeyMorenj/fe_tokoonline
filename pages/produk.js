@@ -42,7 +42,7 @@ const Produk = () => {
       <header style={styles.header}>
         <div style={styles.heroContainer}>
           <h1>Discover Your Style</h1>
-          <p>Trendy products curated just for you. Shop the latest now!</p>
+          <p>Trendy products curated just for you. Shop the latest </p>
         </div>
       </header>
 
